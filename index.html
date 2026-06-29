@@ -15,7 +15,7 @@ body {
   font-family: 'Lato', sans-serif;
 }
 
-/* ================= INTRO COLLAGE ================= */
+/* INTRO */
 #intro {
   position: fixed;
   inset: 0;
@@ -44,8 +44,6 @@ body {
 }
 
 #intro h1 {
-  position: relative;
-  z-index: 2;
   font-family: 'Playfair Display', serif;
   font-size: clamp(34px, 8vw, 60px);
   margin: 0;
@@ -53,28 +51,25 @@ body {
 }
 
 #intro p {
-  position: relative;
-  z-index: 2;
   font-size: clamp(14px, 3vw, 18px);
   margin-top: 12px;
   letter-spacing: 0.15em;
   opacity: 0.9;
 }
 
-/* ================= STORY TRACK ================= */
+/* TRACK */
 #track {
   position: fixed;
   inset: 0;
   display: flex;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.6s ease;
 }
 
 .story {
   min-width: 100vw;
-  width: 100vw;
   height: 100vh;
-  position: relative;
   flex-shrink: 0;
+  position: relative;
 }
 
 .story-bg {
@@ -83,22 +78,29 @@ body {
   background-size: cover;
   background-position: center;
   filter: brightness(0.55);
-  transform: scale(1.05);
 }
 
+/* CONTENT */
 .content {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  bottom: 8vh;
+  transform: translateX(-50%);
   width: min(88%, 700px);
-  max-height: 80vh;
-  overflow-y: auto;
   text-align: center;
   color: white;
-  box-sizing: border-box;
   padding: 20px;
+  box-sizing: border-box;
 }
+
+.last-slide {
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
 .label {
   font-size: clamp(11px, 2vw, 16px);
   letter-spacing: 0.25em;
@@ -110,12 +112,9 @@ body {
   font-family: 'Playfair Display', serif;
   font-size: clamp(18px, 4vw, 34px);
   line-height: 1.6;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-  white-space: normal;
-  word-break: break-word;
 }
 
-/* TOP */
+/* TOPBAR */
 .topbar {
   position: fixed;
   top: 14px;
@@ -126,7 +125,6 @@ body {
   z-index: 10;
   color: white;
   font-size: 14px;
-  letter-spacing: 0.15em;
 }
 
 /* PROGRESS */
@@ -163,62 +161,14 @@ body {
 }
 .tap-left { left: 0; }
 .tap-right { right: 0; }
-  @media (max-width:768px){
 
-.content{
-    bottom:7vh;
-    width:88%;
-}
-
-.quote{
-    font-size:24px;
-    line-height:1.5;
-}
-
-.label{
-    font-size:12px;
-}
-
-.topbar{
-    font-size:12px;
-}
-
-}
-
-@media (max-width:480px){
-
-.content{
-    width:90%;
-    bottom:6vh;
-}
-
-.quote{
-    font-size:20px;
-    line-height:1.6;
-}
-
-.label{
-    font-size:11px;
-}
-
-}
-  .last-slide .quote{
-    font-size:18px;
-    line-height:1.7;
-}
-
-.last-slide .label{
-    font-size:14px;
-}
-
+/* MOBILE */
 @media(max-width:768px){
-
-.last-slide .quote{
-    font-size:16px;
+  .quote { font-size: 24px; }
 }
-
+@media(max-width:480px){
+  .quote { font-size: 20px; }
 }
-
 </style>
 </head>
 
@@ -245,7 +195,6 @@ body {
 
 <script>
 
-/* ================= SYNCED STORYTELLING ================= */
 const slides = [
   {img:"photo1.jpg", label:"Departure", quote:"We didn’t plan it too much — we just left."},
   {img:"photo2.jpg", label:"First Morning", quote:"The world felt new with that sunrise."},
@@ -285,12 +234,12 @@ const bars = document.getElementById("bars");
 const counter = document.getElementById("counter");
 const intro = document.getElementById("intro");
 
-/* COLLAGE BUILD */
+/* COLLAGE */
 const collage = document.getElementById("collage");
-for (let j = 1; j <= 16; j++) {
-  const div = document.createElement("div");
-  div.style.backgroundImage = `url(photo${j}.jpg)`;
-  collage.appendChild(div);
+for(let j=1;j<=16;j++){
+  const d=document.createElement("div");
+  d.style.backgroundImage=`url(photo${j}.jpg)`;
+  collage.appendChild(d);
 }
 
 /* START */
@@ -299,23 +248,27 @@ intro.onclick = () => {
   build();
 };
 
-function build() {
-  track.innerHTML = "";
-  bars.innerHTML = "";
+function build(){
+  track.innerHTML="";
+  bars.innerHTML="";
 
-slide.innerHTML = `
-  <div class="story-bg" style="background-image:url('${s.img}')"></div>
-  <div class="content ${idx === slides.length - 1 ? 'last-slide' : ''}">
-    <div class="label">${s.label}</div>
-    <div class="quote">${s.quote}</div>
-  </div>
-`;
+  slides.forEach((s, idx)=>{
+    const slide=document.createElement("div");
+    slide.className="story";
+
+    slide.innerHTML=`
+      <div class="story-bg" style="background-image:url('${s.img}')"></div>
+      <div class="content ${idx===slides.length-1?'last-slide':''}">
+        <div class="label">${s.label}</div>
+        <div class="quote">${s.quote}</div>
+      </div>
+    `;
 
     track.appendChild(slide);
 
-    const bar = document.createElement("div");
-    bar.className = "bar";
-    bar.innerHTML = "<div></div>";
+    const bar=document.createElement("div");
+    bar.className="bar";
+    bar.innerHTML="<div></div>";
     bars.appendChild(bar);
   });
 
@@ -323,54 +276,53 @@ slide.innerHTML = `
   start();
 }
 
-function update() {
-  track.style.transform = `translateX(-${i * 100}vw)`;
+function update(){
+  track.style.transform=`translateX(-${i*100}vw)`;
 
-  document.querySelectorAll(".bar div").forEach((b, idx) => {
-    b.style.width = idx === i ? "100%" : "0%";
+  document.querySelectorAll(".bar div").forEach((b,idx)=>{
+    b.style.width=idx===i?"100%":"0%";
   });
 
-  counter.innerText = (i + 1) + " / " + slides.length;
+  counter.innerText=`${i+1} / ${slides.length}`;
 }
 
-function next() {
-  i = Math.min(i + 1, slides.length - 1);
+function next(){
+  i=Math.min(i+1,slides.length-1);
   update();
   reset();
 }
 
-function prev() {
-  i = Math.max(i - 1, 0);
+function prev(){
+  i=Math.max(i-1,0);
   update();
   reset();
 }
 
-function start() {
-  timer = setInterval(() => {
-    if (i < slides.length - 1) next();
-  }, 5000);
+function start(){
+  timer=setInterval(()=>{
+    if(i<slides.length-1) next();
+  },5000);
 }
 
-function reset() {
+function reset(){
   clearInterval(timer);
   start();
 }
 
-/* SWIPE */
-document.querySelector(".tap-right").onclick = next;
-document.querySelector(".tap-left").onclick = prev;
+document.querySelector(".tap-right").onclick=next;
+document.querySelector(".tap-left").onclick=prev;
 
-let startX = 0;
-document.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+let startX=0;
+document.addEventListener("touchstart",e=>startX=e.touches[0].clientX);
 
-document.addEventListener("touchend", e => {
-  let dx = e.changedTouches[0].clientX - startX;
-  if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
+document.addEventListener("touchend",e=>{
+  let dx=e.changedTouches[0].clientX-startX;
+  if(Math.abs(dx)>40) dx<0?next():prev();
 });
 
-document.addEventListener("keydown", e => {
-  if (e.key === "ArrowRight") next();
-  if (e.key === "ArrowLeft") prev();
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight")next();
+  if(e.key==="ArrowLeft")prev();
 });
 
 </script>
