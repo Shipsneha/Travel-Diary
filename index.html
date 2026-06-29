@@ -15,7 +15,7 @@ body {
   font-family: 'Lato', sans-serif;
 }
 
-/* ================= INTRO ================= */
+/* ================= INTRO COLLAGE ================= */
 #intro {
   position: fixed;
   inset: 0;
@@ -29,58 +29,49 @@ body {
   text-align: center;
 }
 
-#intro::before {
-  content: "";
+.collage {
   position: absolute;
   inset: 0;
-  background:
-    url("photo1.jpg"), url("photo2.jpg"), url("photo3.jpg"), url("photo4.jpg"),
-    url("photo5.jpg"), url("photo6.jpg"), url("photo7.jpg"), url("photo8.jpg"),
-    url("photo9.jpg"), url("photo10.jpg"), url("photo11.jpg"), url("photo12.jpg"),
-    url("photo13.jpg"), url("photo14.jpg"), url("photo15.jpg"), url("photo16.jpg");
-  background-size: cover;
-  background-position: center;
-  filter: brightness(0.45);
-  transform: scale(1.1);
-  animation: zoom 18s infinite alternate;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
 }
 
-@keyframes zoom {
-  from { transform: scale(1.05); }
-  to { transform: scale(1.15); }
+.collage div {
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.55);
 }
 
 #intro h1 {
   position: relative;
   z-index: 2;
   font-family: 'Playfair Display', serif;
-  font-size: 56px;
+  font-size: 60px;
   margin: 0;
 }
 
 #intro p {
   position: relative;
   z-index: 2;
-  margin-top: 10px;
   font-size: 18px;
-  letter-spacing: 0.2em;
+  margin-top: 12px;
+  letter-spacing: 0.25em;
+  opacity: 0.9;
 }
 
-/* ================= TRACK (NEW CORE CHANGE) ================= */
+/* ================= STORY TRACK ================= */
 #track {
   position: fixed;
   inset: 0;
   display: flex;
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
 }
 
-/* EACH STORY SLIDE */
 .story {
   min-width: 100vw;
   height: 100vh;
   position: relative;
-  overflow: hidden;
 }
 
 .story-bg {
@@ -89,10 +80,9 @@ body {
   background-size: cover;
   background-position: center;
   filter: brightness(0.55);
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
-/* TEXT */
 .content {
   position: absolute;
   bottom: 90px;
@@ -111,12 +101,13 @@ body {
 
 .quote {
   font-family: 'Playfair Display', serif;
-  font-size: 34px;
+  font-size: 36px;
   margin-top: 14px;
   line-height: 1.3;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
 }
 
-/* ================= TOP UI ================= */
+/* TOP */
 .topbar {
   position: fixed;
   top: 14px;
@@ -146,8 +137,6 @@ body {
   flex: 1;
   height: 3px;
   background: rgba(255,255,255,0.25);
-  overflow: hidden;
-  border-radius: 2px;
 }
 
 .bar > div {
@@ -156,7 +145,7 @@ body {
   background: #fff;
 }
 
-/* TAP ZONES */
+/* TAP */
 .tap-left, .tap-right {
   position: fixed;
   top: 0;
@@ -166,6 +155,7 @@ body {
 }
 .tap-left { left: 0; }
 .tap-right { right: 0; }
+
 </style>
 </head>
 
@@ -173,8 +163,9 @@ body {
 
 <!-- INTRO -->
 <div id="intro">
+  <div class="collage" id="collage"></div>
   <h1>Our Little Adventures</h1>
-  <p>Tap anywhere to begin</p>
+  <p>Tap to begin</p>
 </div>
 
 <div class="progress-wrap" id="bars"></div>
@@ -191,23 +182,24 @@ body {
 
 <script>
 
+/* ================= SYNCED STORYTELLING ================= */
 const slides = [
-  {img:"photo1.jpg", label:"The Beginning", quote:"We just packed and went."},
-  {img:"photo2.jpg", label:"First Light", quote:"Sunrise was worth it."},
-  {img:"photo3.jpg", label:"Unexpected Finds", quote:"Best food found accidentally."},
-  {img:"photo4.jpg", label:"By The Water", quote:"Peace felt like this."},
-  {img:"photo5.jpg", label:"Above Everything", quote:"Hilltop magic moments."},
-  {img:"photo6.jpg", label:"Golden Hour", quote:"Light turned everything gold."},
-  {img:"photo7.jpg", label:"Street Chaos", quote:"Chaos we somehow loved."},
-  {img:"photo8.jpg", label:"Endless Roads", quote:"Music, windows down, memories."},
-  {img:"photo9.jpg", label:"Hidden Corners", quote:"Just ours."},
-  {img:"photo10.jpg", label:"Coffee Stop", quote:"Coffee and calm pauses."},
-  {img:"photo11.jpg", label:"After Rain", quote:"Everything sparkled again."},
-  {img:"photo12.jpg", label:"Night Walks", quote:"The city felt softer."},
-  {img:"photo13.jpg", label:"Slow Sundays", quote:"Doing nothing felt right."},
-  {img:"photo14.jpg", label:"Local Stories", quote:"Every corner had a story."},
-  {img:"photo15.jpg", label:"Last Sunrise", quote:"We didn’t want it to end."},
-  {img:"photo16.jpg", label:"Until Next Time", quote:"Not goodbye, just pause."}
+  {img:"photo1.jpg", label:"Departure", quote:"We didn’t plan it too much — we just left."},
+  {img:"photo2.jpg", label:"First Morning", quote:"The world felt new with that sunrise."},
+  {img:"photo3.jpg", label:"Unexpected Turns", quote:"The best memories were never on the map."},
+  {img:"photo4.jpg", label:"Still Waters", quote:"Everything slowed down here."},
+  {img:"photo5.jpg", label:"Higher Ground", quote:"It felt like the world paused beneath us."},
+  {img:"photo6.jpg", label:"Golden Hour", quote:"Even silence looked beautiful in this light."},
+  {img:"photo7.jpg", label:"City Chaos", quote:"Somehow, the noise felt alive."},
+  {img:"photo8.jpg", label:"Open Roads", quote:"Every turn had a new story waiting."},
+  {img:"photo9.jpg", label:"Hidden Places", quote:"The best spots were never planned."},
+  {img:"photo10.jpg", label:"Coffee Breaks", quote:"Small pauses made the trip perfect."},
+  {img:"photo11.jpg", label:"Shared Moments", quote:"The smallest moments all feel like grand events with you."},
+  {img:"photo12.jpg", label:"Night Glow", quote:"The city looked softer after dark."},
+  {img:"photo13.jpg", label:"Slow Days", quote:"We learned to enjoy doing nothing."},
+  {img:"photo14.jpg", label:"Local Stories", quote:"Every corner had a voice."},
+  {img:"photo15.jpg", label:"Goodbyes Near", quote:"We started noticing time too much."},
+  {img:"photo16.jpg", label:"Final Frame", quote:"Not the end — just the next journey waiting."}
 ];
 
 let i = 0;
@@ -218,14 +210,21 @@ const bars = document.getElementById("bars");
 const counter = document.getElementById("counter");
 const intro = document.getElementById("intro");
 
-/* INTRO */
+/* COLLAGE BUILD */
+const collage = document.getElementById("collage");
+for (let j = 1; j <= 16; j++) {
+  const div = document.createElement("div");
+  div.style.backgroundImage = `url(photo${j}.jpg)`;
+  collage.appendChild(div);
+}
+
+/* START */
 intro.onclick = () => {
   intro.style.display = "none";
   build();
 };
 
 function build() {
-
   track.innerHTML = "";
   bars.innerHTML = "";
 
@@ -254,7 +253,6 @@ function build() {
   start();
 }
 
-/* CORE SWIPE MOVE */
 function update() {
   track.style.transform = `translateX(-${i * 100}vw)`;
 
@@ -288,23 +286,16 @@ function reset() {
   start();
 }
 
-/* TAP */
+/* SWIPE */
 document.querySelector(".tap-right").onclick = next;
 document.querySelector(".tap-left").onclick = prev;
 
-/* SWIPE */
 let startX = 0;
-
-document.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-});
+document.addEventListener("touchstart", e => startX = e.touches[0].clientX);
 
 document.addEventListener("touchend", e => {
   let dx = e.changedTouches[0].clientX - startX;
-
-  if (Math.abs(dx) > 40) {
-    dx < 0 ? next() : prev();
-  }
+  if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
 });
 
 document.addEventListener("keydown", e => {
