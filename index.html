@@ -15,7 +15,7 @@ body {
   font-family: 'Lato', sans-serif;
 }
 
-/* ================= INTRO COLLAGE ================= */
+/* ================= INTRO SCREEN ================= */
 #intro {
   position: fixed;
   inset: 0;
@@ -26,52 +26,73 @@ body {
   flex-direction: column;
   color: white;
   cursor: pointer;
-  text-align: center;
 }
 
-.collage {
+#intro::before {
+  content: "";
   position: absolute;
   inset: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-}
-
-.collage div {
+  gap: 2px;
+  z-index: 0;
+  filter: brightness(0.5);
+  background: 
+    url("photo1.jpg"), url("photo2.jpg"), url("photo3.jpg"), url("photo4.jpg"),
+    url("photo5.jpg"), url("photo6.jpg"), url("photo7.jpg"), url("photo8.jpg"),
+    url("photo9.jpg"), url("photo10.jpg"), url("photo11.jpg"), url("photo12.jpg"),
+    url("photo13.jpg"), url("photo14.jpg"), url("photo15.jpg"), url("photo16.jpg");
   background-size: cover;
   background-position: center;
-  filter: brightness(0.55);
+  background-repeat: no-repeat;
+  background-blend-mode: overlay;
+  animation: zoom 20s infinite alternate;
+}
+
+@keyframes zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
 }
 
 #intro h1 {
   position: relative;
   z-index: 2;
   font-family: 'Playfair Display', serif;
-  font-size: 60px;
-  margin: 0;
+  font-size: 42px;
+  text-align: center;
 }
 
 #intro p {
   position: relative;
   z-index: 2;
-  font-size: 18px;
-  margin-top: 12px;
-  letter-spacing: 0.25em;
-  opacity: 0.9;
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.8;
 }
 
-/* ================= STORY TRACK ================= */
-#track {
+/* ================= STORIES ================= */
+
+#base {
   position: fixed;
   inset: 0;
-  display: flex;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  background: url("photo1.jpg") center/cover no-repeat;
+  filter: brightness(0.6);
+  z-index: 0;
 }
 
 .story {
-  min-width: 100vw;
-  height: 100vh;
-  position: relative;
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.05);
+  transition: opacity .6s ease, transform .6s ease;
+  z-index: 2;
+}
+
+.story.active {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .story-bg {
@@ -80,48 +101,26 @@ body {
   background-size: cover;
   background-position: center;
   filter: brightness(0.55);
-  transform: scale(1.05);
+  transform: scale(1.1);
+  transition: transform 6s ease;
 }
 
-.content {
-  position: absolute;
-  bottom: 90px;
-  width: 100%;
-  text-align: center;
-  color: white;
-  padding: 0 20px;
+.story.active .story-bg {
+  transform: scale(1);
 }
 
-.label {
-  font-size: 16px;
-  letter-spacing: 0.35em;
-  color: #f9c46b;
-  text-transform: uppercase;
-}
-
-.quote {
-  font-family: 'Playfair Display', serif;
-  font-size: 36px;
-  margin-top: 14px;
-  line-height: 1.3;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-}
-
-/* TOP */
 .topbar {
   position: fixed;
-  top: 14px;
+  top: 12px;
   left: 12px;
   right: 12px;
   display: flex;
   justify-content: space-between;
   z-index: 10;
   color: white;
-  font-size: 14px;
-  letter-spacing: 0.15em;
+  font-size: 12px;
 }
 
-/* PROGRESS */
 .progress-wrap {
   position: fixed;
   top: 0;
@@ -135,7 +134,7 @@ body {
 
 .bar {
   flex: 1;
-  height: 3px;
+  height: 2px;
   background: rgba(255,255,255,0.25);
 }
 
@@ -145,7 +144,27 @@ body {
   background: #fff;
 }
 
-/* TAP */
+.content {
+  position: absolute;
+  bottom: 90px;
+  width: 100%;
+  text-align: center;
+  color: white;
+}
+
+.label {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: #f9c46b;
+}
+
+.quote {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  margin-top: 10px;
+  padding: 0 20px;
+}
+
 .tap-left, .tap-right {
   position: fixed;
   top: 0;
@@ -153,20 +172,20 @@ body {
   width: 50%;
   z-index: 30;
 }
+
 .tap-left { left: 0; }
 .tap-right { right: 0; }
-
 </style>
 </head>
 
 <body>
 
-<!-- INTRO -->
 <div id="intro">
-  <div class="collage" id="collage"></div>
   <h1>Our Little Adventures</h1>
-  <p>Tap to begin</p>
+  <p>Tap anywhere to begin</p>
 </div>
+
+<div id="base"></div>
 
 <div class="progress-wrap" id="bars"></div>
 
@@ -175,65 +194,68 @@ body {
   <div id="counter">1 / 16</div>
 </div>
 
-<div id="track"></div>
+<div id="container"></div>
 
 <div class="tap-left"></div>
 <div class="tap-right"></div>
 
 <script>
-
-/* ================= SYNCED STORYTELLING ================= */
 const slides = [
-  {img:"photo1.jpg", label:"Departure", quote:"We didn’t plan it too much — we just left."},
-  {img:"photo2.jpg", label:"First Morning", quote:"The world felt new with that sunrise."},
-  {img:"photo3.jpg", label:"Unexpected Turns", quote:"The best memories were never on the map."},
-  {img:"photo4.jpg", label:"Still Waters", quote:"Everything slowed down here."},
-  {img:"photo5.jpg", label:"Higher Ground", quote:"It felt like the world paused beneath us."},
-  {img:"photo6.jpg", label:"Golden Hour", quote:"Even silence looked beautiful in this light."},
-  {img:"photo7.jpg", label:"City Chaos", quote:"Somehow, the noise felt alive."},
-  {img:"photo8.jpg", label:"Open Roads", quote:"Every turn had a new story waiting."},
-  {img:"photo9.jpg", label:"Hidden Places", quote:"The best spots were never planned."},
-  {img:"photo10.jpg", label:"Coffee Breaks", quote:"Small pauses made the trip perfect."},
-  {img:"photo11.jpg", label:"Shared Moments", quote:"The smallest moments all feel like grand events with you."},
-  {img:"photo12.jpg", label:"Night Glow", quote:"The city looked softer after dark."},
-  {img:"photo13.jpg", label:"Slow Days", quote:"We learned to enjoy doing nothing."},
-  {img:"photo14.jpg", label:"Local Stories", quote:"Every corner had a voice."},
-  {img:"photo15.jpg", label:"Goodbyes Near", quote:"We started noticing time too much."},
-  {img:"photo16.jpg", label:"Final Frame", quote:"Not the end — just the next journey waiting."}
+  {img:"photo1.jpg", label:"Where It All Began", quote:"We just packed and went."},
+  {img:"photo2.jpg", label:"First Morning", quote:"Sunrise was worth it."},
+  {img:"photo3.jpg", label:"Lost & Found", quote:"Best food found accidentally."},
+  {img:"photo4.jpg", label:"By The Water", quote:"Peace felt like this."},
+  {img:"photo5.jpg", label:"Hilltop Magic", quote:"Above everything."},
+  {img:"photo6.jpg", label:"Golden Hour", quote:"Light turned everything gold."},
+  {img:"photo7.jpg", label:"Market Day", quote:"Chaos we loved."},
+  {img:"photo8.jpg", label:"The Long Road", quote:"Music + memories."},
+  {img:"photo9.jpg", label:"Hidden Corner", quote:"Just ours."},
+  {img:"photo10.jpg", label:"Café Stop", quote:"Coffee & calm."},
+  {img:"photo11.jpg", label:"After Rain", quote:"Everything sparkled."},
+  {img:"photo12.jpg", label:"Night Walk", quote:"City felt softer."},
+  {img:"photo13.jpg", label:"Sunday Slow", quote:"Doing nothing."},
+  {img:"photo14.jpg", label:"Local Secrets", quote:"Stories everywhere."},
+  {img:"photo15.jpg", label:"Last Sunrise", quote:"We held on."},
+
+  {
+    img:"photo16.jpg",
+    label:"For You 🤍",
+    quote:`You make everything feel a little more okay 🌿✨<br><br>
+
+No matter how small or silly my thoughts are, you listen like they matter 🤍<br><br>
+
+Somehow, you’ve become the only person I naturally end up sharing everything with… even my so-called “first world problems” 😌💭 even though I know I’m probably going to get an earful after all the rant 😅🤍<br><br>
+
+And still, you never make it feel like too much. You just hear me, understand me, and somehow make things feel lighter 🫶✨<br><br>
+
+It’s like with you, even my overthinking finds a little peace 🌙🤍`
+  }
 ];
 
 let i = 0;
 let timer;
 
-const track = document.getElementById("track");
+const container = document.getElementById("container");
 const bars = document.getElementById("bars");
 const counter = document.getElementById("counter");
 const intro = document.getElementById("intro");
 
-/* COLLAGE BUILD */
-const collage = document.getElementById("collage");
-for (let j = 1; j <= 16; j++) {
-  const div = document.createElement("div");
-  div.style.backgroundImage = `url(photo${j}.jpg)`;
-  collage.appendChild(div);
-}
-
-/* START */
-intro.onclick = () => {
-  intro.style.display = "none";
+intro.addEventListener("click", () => {
+  intro.style.opacity = "0";
+  intro.style.pointerEvents = "none";
+  setTimeout(() => intro.remove(), 800);
   build();
-};
+});
 
 function build() {
-  track.innerHTML = "";
+  container.innerHTML = "";
   bars.innerHTML = "";
 
-  slides.forEach((s) => {
+  slides.forEach((s, idx) => {
+    const story = document.createElement("div");
+    story.className = "story" + (idx === 0 ? " active" : "");
 
-    const slide = document.createElement("div");
-    slide.className = "story";
-
-    slide.innerHTML = `
+    story.innerHTML = `
       <div class="story-bg" style="background-image:url('${s.img}')"></div>
       <div class="content">
         <div class="label">${s.label}</div>
@@ -241,7 +263,7 @@ function build() {
       </div>
     `;
 
-    track.appendChild(slide);
+    container.appendChild(story);
 
     const bar = document.createElement("div");
     bar.className = "bar";
@@ -254,7 +276,9 @@ function build() {
 }
 
 function update() {
-  track.style.transform = `translateX(-${i * 100}vw)`;
+  document.querySelectorAll(".story").forEach((el, idx) => {
+    el.classList.toggle("active", idx === i);
+  });
 
   document.querySelectorAll(".bar div").forEach((b, idx) => {
     b.style.width = idx === i ? "100%" : "0%";
@@ -264,21 +288,19 @@ function update() {
 }
 
 function next() {
-  i = Math.min(i + 1, slides.length - 1);
+  i = (i + 1) % slides.length;
   update();
   reset();
 }
 
 function prev() {
-  i = Math.max(i - 1, 0);
+  i = (i - 1 + slides.length) % slides.length;
   update();
   reset();
 }
 
 function start() {
-  timer = setInterval(() => {
-    if (i < slides.length - 1) next();
-  }, 5000);
+  timer = setInterval(next, 5000);
 }
 
 function reset() {
@@ -286,13 +308,11 @@ function reset() {
   start();
 }
 
-/* SWIPE */
 document.querySelector(".tap-right").onclick = next;
 document.querySelector(".tap-left").onclick = prev;
 
 let startX = 0;
 document.addEventListener("touchstart", e => startX = e.touches[0].clientX);
-
 document.addEventListener("touchend", e => {
   let dx = e.changedTouches[0].clientX - startX;
   if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
@@ -302,7 +322,6 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowRight") next();
   if (e.key === "ArrowLeft") prev();
 });
-
 </script>
 
 </body>
