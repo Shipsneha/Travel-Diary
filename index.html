@@ -161,6 +161,7 @@ body {
 
 <body>
 
+<!-- INTRO -->
 <div id="intro">
   <div class="collage" id="collage"></div>
   <h1>Our Little Adventures</h1>
@@ -181,6 +182,7 @@ body {
 
 <script>
 
+/* ================= SYNCED STORYTELLING ================= */
 const slides = [
   {img:"photo1.jpg", label:"Departure", quote:"We didn’t plan it too much — we just left."},
   {img:"photo2.jpg", label:"First Morning", quote:"The world felt new with that sunrise."},
@@ -197,19 +199,12 @@ const slides = [
   {img:"photo13.jpg", label:"Slow Days", quote:"We learned to enjoy doing nothing."},
   {img:"photo14.jpg", label:"Local Stories", quote:"Every corner had a voice."},
   {img:"photo15.jpg", label:"Goodbyes Near", quote:"We started noticing time too much."},
-
-  {
-    img:"photo16.jpg",
-    label:"For You 🤍",
-    quote:"You make everything feel a little more okay 🌿✨<br><br>
+  {img:"photo16.jpg", label:"For you", quote:"You make everything feel a little more okay 🌿✨<br><br>
 No matter how small or silly my thoughts are, you listen like they matter 🤍<br><br>
 Somehow, you’ve become the only person I naturally end up sharing everything with… even my so-called “first world problems” 😌💭 even though I know I’m probably going to get an earful after all the rant 😅🤍<br><br>
 And still, you never make it feel like too much. You just hear me, understand me, and somehow make things feel lighter 🫶✨<br><br>
-It’s like with you, even my overthinking finds a little peace 🌙🤍"
-  }
+It’s like with you, even my overthinking finds a little peace 🌙🤍"}
 ];
-
-/* ---- rest code unchanged ---- */
 
 let i = 0;
 let timer;
@@ -219,6 +214,7 @@ const bars = document.getElementById("bars");
 const counter = document.getElementById("counter");
 const intro = document.getElementById("intro");
 
+/* COLLAGE BUILD */
 const collage = document.getElementById("collage");
 for (let j = 1; j <= 16; j++) {
   const div = document.createElement("div");
@@ -226,6 +222,7 @@ for (let j = 1; j <= 16; j++) {
   collage.appendChild(div);
 }
 
+/* START */
 intro.onclick = () => {
   intro.style.display = "none";
   build();
@@ -293,11 +290,13 @@ function reset() {
   start();
 }
 
+/* SWIPE */
 document.querySelector(".tap-right").onclick = next;
 document.querySelector(".tap-left").onclick = prev;
 
 let startX = 0;
 document.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+
 document.addEventListener("touchend", e => {
   let dx = e.changedTouches[0].clientX - startX;
   if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
