@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Travel Diary ✈️</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── Slideshow ── */
+  #slideshow {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    pointer-events: none;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+
+  .slide-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.08);
+    transition: transform 8s ease;
+    filter: brightness(0.52);
+  }
+  .slide.active .slide-bg { transform: scale(1); }
+
+  /* Gradient overlay */
+  .slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0,0,0,0.88) 0%,
+      rgba(0,0,0,0.18) 50%,
+      rgba(0,0,0,0.04) 100%
+    );
+  }
+
+  /* ── Slide Content ── */
+  .slide-content {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 2rem 5.5rem;
+    text-align: center;
+  }
+
+  .slide-label {
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    font-size: 0.72rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: #f9c46b;
+    margin-bottom: 0.9rem;
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.8s 0.4s ease, transform 0.8s 0.4s ease;
+  }
+  .slide.active .slide-label { opacity: 1; transform: translateY(0); }
+
+  .slide-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.15rem, 3vw, 2rem);
+    font-style: italic;
+    line-height: 1.65;
+    max-width: 720px;
+    color: #fff;
+    text-shadow: 0 2px 26px rgba(0,0,0,0.65);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.9s 0.7s ease, transform 0.9s 0.7s ease;
+  }
+  .slide.active .slide-quote { opacity: 1; transform: translateY(0); }
+
+  .slide-emojis {
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 1.4rem;
+    font-size: 2.1rem;
+    opacity: 0;
+    transition: opacity 0.8s 1.1s ease;
+  }
+  .slide.active .slide-emojis { opacity: 1; }
+
+  .emoji-float { display: inline-block; }
+  .slide.active .emoji-float:nth-child(1) { animation: floatA 2.8s 1.3s ease-in-out infinite alternate; }
+  .slide.active .emoji-float:nth-child(2) { animation: floatB 3.2s 1.5s ease-in-out infinite alternate; }
+  .slide.active .emoji-float:nth-child(3) { animation: floatA 2.5s 1.7s ease-in-out infinite alternate; }
+
+  @keyframes floatA {
+    from { transform: translateY(0) rotate(-4deg); }
+    to   { transform: translateY(-13px) rotate(4deg); }
+  }
+  @keyframes floatB {
+    from { transform: translateY(0) scale(1); }
+    to   { transform: translateY(-17px) scale(1.14); }
+  }
+
+  /* ── Header ── */
+  #header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.1rem 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    color: #f9c46b;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  }
+
+  #counter {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.55);
+  }
+
+  /* ── Progress bar ── */
+  #progress-wrap {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 2.5px;
+    background: rgba(255,255,255,0.08);
+    z-index: 100;
+  }
+  #progress { height: 100%; width: 0%; background: #f9c46b; transition: width 60ms linear; }
+
+  /* ── Nav Buttons ── */
+  .nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: #fff;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(6px);
+    transition: background 0.25s, transform 0.25s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.17); transform: translateY(-50%) scale(1.08); }
+  #prevBtn { left: 1.2rem; }
+  #nextBtn { right: 1.2rem; }
+
+  /* ── Dots ── */
+  #dots {
+    position: fixed;
+    bottom: 1.9rem; left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    gap: 7px;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.28);
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .dot.active { background: #f9c46b; transform: scale(1.4); }
+
+  /* ── Play/Pause ── */
+  #playBtn {
+    position: fixed;
+    bottom: 1.55rem; right: 1.6rem;
+    z-index: 100;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: color 0.25s;
+    letter-spacing: 0.06em;
+  }
+  #playBtn:hover { color: #fff; }
+
+  /* ── Heart particles ── */
+  .heart-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    font-size: 1.4rem;
+    animation: floatUp 2.4s ease-out forwards;
+  }
+  @keyframes floatUp {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-130px) scale(0.4); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div id="header">
+  <div class="brand">✈️ Our Travel Diary</div>
+  <div id="counter">1 / 16</div>
+</div>
+
+<!-- Slideshow container -->
+<div id="slideshow"></div>
+
+<!-- Navigation -->
+<button class="nav-btn" id="prevBtn">&#8592;</button>
+<button class="nav-btn" id="nextBtn">&#8594;</button>
+
+<!-- Dots -->
+<div id="dots"></div>
+
+<!-- Play/Pause -->
+<button id="playBtn">&#9646;&#9646;</button>
+
+<!-- Progress bar -->
+<div id="progress-wrap"><div id="progress"></div></div>
+
+<script>
+// ─────────────────────────────────────────────────────────
+//  SLIDE DATA  –  images live in the "photos/" subfolder
+// ─────────────────────────────────────────────────────────
+var slides = [
+  {
+    img:    "photo1.jpg",
+    label:  "Where It All Began",
+    quote:  "We didn't plan this trip. We just packed, pointed at a map, and went.",
+    emojis: ["🗺️","✈️","🌍"]
+  },
+  {
+    img:    "photo2.jpg",
+    label:  "First Morning",
+    quote:  "The alarm went off at 5 AM. We didn't mind. The sunrise was worth every minute.",
+    emojis: ["🌅","☕","🥐"]
+  },
+  {
+    img:    "photo3.jpg",
+    label:  "Lost & Found",
+    quote:  "We got wonderfully, gloriously lost — and found the best street food of our lives.",
+    emojis: ["🍜","🗺️","😂"]
+  },
+  {
+    img:    "photo4.jpg",
+    label:  "By The Water",
+    quote:  "Some moments don't need filters. They just need to be felt.",
+    emojis: ["🌊","💙","🐚"]
+  },
+  {
+    img:    "photo5.jpg",
+    label:  "Hilltop Magic",
+    quote:  "At the top, breathless — from the climb and the view both.",
+    emojis: ["⛰️","🌬️","🏔️"]
+  },
+  {
+    img:    "photo6.jpg",
+    label:  "Golden Hour",
+    quote:  "The light turned everything to honey. We stood very still and said nothing.",
+    emojis: ["🌇","✨","🍯"]
+  },
+  {
+    img:    "photo7.jpg",
+    label:  "Market Day",
+    quote:  "Colors, chaos, and the smell of spices — a full sensory overload we'd gladly repeat.",
+    emojis: ["🌶️","🛍️","🌸"]
+  },
+  {
+    img:    "photo8.jpg",
+    label:  "The Long Road",
+    quote:  "Hours in the car, terrible music, and the best conversation we've ever had.",
+    emojis: ["🚗","🎵","🛣️"]
+  },
+  {
+    img:    "photo9.jpg",
+    label:  "Hidden Corner",
+    quote:  "No one told us about this place. That made it feel entirely ours.",
+    emojis: ["🗝️","🌿","😍"]
+  },
+  {
+    img:    "photo10.jpg",
+    label:  "Café Stop",
+    quote:  "Third café of the day. The coffee was perfect. The company, even better.",
+    emojis: ["☕","📖","💛"]
+  },
+  {
+    img:    "photo11.jpg",
+    label:  "After Rain",
+    quote:  "We got soaked. Then the clouds parted and everything sparkled like glass.",
+    emojis: ["🌧️","🌈","💧"]
+  },
+  {
+    img:    "photo12.jpg",
+    label:  "Night Walk",
+    quote:  "The city looks different at midnight — softer, quieter, like it's finally itself.",
+    emojis: ["🌙","🏙️","🌟"]
+  },
+  {
+    img:    "photo13.jpg",
+    label:  "Sunday Slow",
+    quote:  "We decided to do absolutely nothing. It turned out to be the best day.",
+    emojis: ["🛋️","🍹","😴"]
+  },
+  {
+    img:    "photo14.jpg",
+    label:  "Local Secrets",
+    quote:  "The family who runs this place has been here 80 years. We hope they never leave.",
+    emojis: ["🏡","❤️","🕯️"]
+  },
+  {
+    img:    "photo15.jpg",
+    label:  "Last Sunrise",
+    quote:  "Our final morning. We woke up early on purpose, just to hold onto it a little longer.",
+    emojis: ["🌄","🥹","📸"]
+  },
+  {
+    img:    "photo16.jpg",
+    label:  "See You Again",
+    quote:  "Not goodbye. Just: until next time.",
+    emojis: ["💌","✈️","🌏"]
+  }
+];
+
+// ─────────────────────────────────────────────────────────
+//  Build DOM
+// ─────────────────────────────────────────────────────────
+var current = 0, isPlaying = true;
+var autoTimer = null, progressTimer = null;
+var progressStart = null, progressElapsed = 0;
+var DURATION = 5500;
+
+var ss       = document.getElementById('slideshow');
+var dotsEl   = document.getElementById('dots');
+var counterEl= document.getElementById('counter');
+var progressEl= document.getElementById('progress');
+var playBtn  = document.getElementById('playBtn');
+
+slides.forEach(function(s, i) {
+  // Slide element
+  var div = document.createElement('div');
+  div.className = 'slide' + (i === 0 ? ' active' : '');
+  div.innerHTML =
+    '<div class="slide-bg" style="background-image:url(' + JSON.stringify(s.img) + ')"></div>' +
+    '<div class="slide-content">' +
+      '<div class="slide-label">' + s.label + '</div>' +
+      '<div class="slide-quote">\u201c' + s.quote + '\u201d</div>' +
+      '<div class="slide-emojis">' +
+        s.emojis.map(function(e){ return '<span class="emoji-float">' + e + '</span>'; }).join('') +
+      '</div>' +
+    '</div>';
+  ss.appendChild(div);
+
+  // Dot
+  var dot = document.createElement('div');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dot.onclick = (function(n){ return function(){ goTo(n); }; })(i);
+  dotsEl.appendChild(dot);
+});
+
+var allSlides = document.querySelectorAll('.slide');
+var allDots   = document.querySelectorAll('.dot');
+
+function goTo(n) {
+  allSlides[current].classList.remove('active');
+  allDots[current].classList.remove('active');
+  current = ((n % slides.length) + slides.length) % slides.length;
+  allSlides[current].classList.add('active');
+  allDots[current].classList.add('active');
+  counterEl.textContent = (current + 1) + ' / ' + slides.length;
+  progressElapsed = 0;
+  clearTimeout(autoTimer);
+  clearInterval(progressTimer);
+  progressEl.style.width = '0%';
+  if (isPlaying) startRun();
+}
+
+function startRun() {
+  progressStart = performance.now();
+  progressTimer = setInterval(function() {
+    progressEl.style.width =
+      Math.min(((performance.now() - progressStart) / DURATION) * 100, 100) + '%';
+  }, 60);
+  autoTimer = setTimeout(function(){ goTo(current + 1); }, DURATION);
+}
+
+function pause() {
+  clearTimeout(autoTimer);
+  clearInterval(progressTimer);
+  progressElapsed += performance.now() - (progressStart || performance.now());
+  playBtn.innerHTML = '&#9654;';
+}
+
+function resume() {
+  progressStart = performance.now();
+  progressTimer = setInterval(function() {
+    progressEl.style.width =
+      Math.min(((performance.now() - progressStart + progressElapsed) / DURATION) * 100, 100) + '%';
+  }, 60);
+  autoTimer = setTimeout(function(){ goTo(current + 1); }, DURATION - progressElapsed);
+  playBtn.innerHTML = '&#9646;&#9646;';
+}
+
+playBtn.onclick = function() { isPlaying = !isPlaying; isPlaying ? resume() : pause(); };
+document.getElementById('prevBtn').onclick = function(){ goTo(current - 1); };
+document.getElementById('nextBtn').onclick = function(){ goTo(current + 1); };
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight') goTo(current + 1);
+  else if (e.key === 'ArrowLeft')  goTo(current - 1);
+  else if (e.key === ' ') { e.preventDefault(); isPlaying = !isPlaying; isPlaying ? resume() : pause(); }
+});
+
+var tx = 0;
+document.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; });
+document.addEventListener('touchend',   function(e){
+  var dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 50) { dx < 0 ? goTo(current + 1) : goTo(current - 1); }
+});
+
+// Click sparkles
+var burst = ['💕','💖','💗','✨','🌟','💫','🌸','🥰'];
+ss.addEventListener('click', function(e) {
+  for (var i = 0; i < 6; i++) {
+    (function(i){
+      setTimeout(function(){
+        var h = document.createElement('span');
+        h.className = 'heart-particle';
+        h.textContent = burst[Math.floor(Math.random() * burst.length)];
+        h.style.left = (e.clientX + (Math.random() - 0.5) * 110) + 'px';
+        h.style.top  = e.clientY + 'px';
+        document.body.appendChild(h);
+        setTimeout(function(){ h.remove(); }, 2600);
+      }, i * 80);
+    })(i);
+  }
+});
+
+startRun();
+</script>
+</body>
+</html>
