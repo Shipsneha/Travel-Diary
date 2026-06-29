@@ -1,116 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Travel Stories ✈️</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  background: #000;
+  overflow: hidden;
+  font-family: 'Lato', sans-serif;
+}
+
+/* SAFE BACKGROUND */
+#base {
+  position: fixed;
+  inset: 0;
+  background: url("photo1.jpg") center/cover no-repeat;
+  filter: brightness(0.6);
+  z-index: 0;
+}
+
+/* STORY WRAPPER */
+.story {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.05);
+  transition: opacity .6s ease, transform .6s ease;
+  z-index: 2;
+}
+
+.story.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.story-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.55);
+  transform: scale(1.1);
+  transition: transform 6s ease;
+}
+
+.story.active .story-bg {
+  transform: scale(1);
+}
+
+/* TOP UI */
+.topbar {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 10;
+  color: white;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+}
+
+/* PROGRESS BAR */
+.progress-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  z-index: 20;
+}
+
+.bar {
+  flex: 1;
+  height: 2px;
+  background: rgba(255,255,255,0.25);
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.bar > div {
+  height: 100%;
+  width: 0%;
+  background: #fff;
+}
+
+/* TEXT */
+.content {
+  position: absolute;
+  bottom: 90px;
+  width: 100%;
+  text-align: center;
+  color: white;
+  z-index: 5;
+}
+
+.label {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: #f9c46b;
+}
+
+.quote {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  margin-top: 10px;
+  padding: 0 20px;
+}
+
+/* TAP ZONES */
+.tap-left, .tap-right {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  z-index: 30;
+}
+
+.tap-left { left: 0; }
+.tap-right { right: 0; }
+
+</style>
+</head>
+
+<body>
+
+<div id="base"></div>
+
+<div class="progress-wrap" id="bars"></div>
+
+<div class="topbar">
+  <div>✈️ Travel Stories</div>
+  <div id="counter">1 / 16</div>
+</div>
+
+<div id="container"></div>
+
+<div class="tap-left"></div>
+<div class="tap-right"></div>
+
 <script>
-var slides = [
-  { img: "photo1.jpg", label: "Where It All Began", quote: "We didn't plan this trip. We just packed, pointed at a map, and went.", emojis: ["🗺️","✈️","🌍"] },
-  { img: "photo2.jpg", label: "First Morning", quote: "The alarm went off at 5 AM. We didn't mind. The sunrise was worth every minute.", emojis: ["🌅","☕","🥐"] },
-  { img: "photo3.jpg", label: "Lost & Found", quote: "We got wonderfully, gloriously lost — and found the best street food of our lives.", emojis: ["🍜","🗺️","😂"] },
-  { img: "photo4.jpg", label: "By The Water", quote: "Some moments don't need filters. They just need to be felt.", emojis: ["🌊","💙","🐚"] },
-  { img: "photo5.jpg", label: "Hilltop Magic", quote: "At the top, breathless — from the climb and the view both.", emojis: ["⛰️","🌬️","🏔️"] },
-  { img: "photo6.jpg", label: "Golden Hour", quote: "The light turned everything to honey. We stood very still and said nothing.", emojis: ["🌇","✨","🍯"] },
-  { img: "photo7.jpg", label: "Market Day", quote: "Colors, chaos, and the smell of spices — a full sensory overload we'd gladly repeat.", emojis: ["🌶️","🛍️","🌸"] },
-  { img: "photo8.jpg", label: "The Long Road", quote: "Hours in the car, terrible music, and the best conversation we've ever had.", emojis: ["🚗","🎵","🛣️"] },
-  { img: "photo9.jpg", label: "Hidden Corner", quote: "No one told us about this place. That made it feel entirely ours.", emojis: ["🗝️","🌿","😍"] },
-  { img: "photo10.jpg", label: "Café Stop", quote: "Third café of the day. The coffee was perfect. The company, even better.", emojis: ["☕","📖","💛"] },
-  { img: "photo11.jpg", label: "After Rain", quote: "We got soaked. Then the clouds parted and everything sparkled like glass.", emojis: ["🌧️","🌈","💧"] },
-  { img: "photo12.jpg", label: "Night Walk", quote: "The city looks different at midnight — softer, quieter, like it's finally itself.", emojis: ["🌙","🏙️","🌟"] },
-  { img: "photo13.jpg", label: "Sunday Slow", quote: "We decided to do absolutely nothing. It turned out to be the best day.", emojis: ["🛋️","🍹","😴"] },
-  { img: "photo14.jpg", label: "Local Secrets", quote: "The family who runs this place has been here 80 years. We hope they never leave.", emojis: ["🏡","❤️","🕯️"] },
-  { img: "photo15.jpg", label: "Last Sunrise", quote: "Our final morning. We woke up early on purpose, just to hold onto it a little longer.", emojis: ["🌄","🥹","📸"] },
-  { img: "photo16.jpg", label: "See You Again", quote: "Not goodbye. Just: until next time.", emojis: ["💌","✈️","🌏"] }
+const slides = [
+  {img:"photo1.jpg", label:"Where It All Began", quote:"We just packed and went."},
+  {img:"photo2.jpg", label:"First Morning", quote:"Sunrise was worth it."},
+  {img:"photo3.jpg", label:"Lost & Found", quote:"Best food found accidentally."},
+  {img:"photo4.jpg", label:"By The Water", quote:"Peace felt like this."},
+  {img:"photo5.jpg", label:"Hilltop Magic", quote:"Above everything."},
+  {img:"photo6.jpg", label:"Golden Hour", quote:"Light turned everything gold."},
+  {img:"photo7.jpg", label:"Market Day", quote:"Chaos we loved."},
+  {img:"photo8.jpg", label:"The Long Road", quote:"Music + memories."},
+  {img:"photo9.jpg", label:"Hidden Corner", quote:"Just ours."},
+  {img:"photo10.jpg", label:"Café Stop", quote:"Coffee & calm."},
+  {img:"photo11.jpg", label:"After Rain", quote:"Everything sparkled."},
+  {img:"photo12.jpg", label:"Night Walk", quote:"City felt softer."},
+  {img:"photo13.jpg", label:"Sunday Slow", quote:"Doing nothing."},
+  {img:"photo14.jpg", label:"Local Secrets", quote:"Stories everywhere."},
+  {img:"photo15.jpg", label:"Last Sunrise", quote:"We held on."},
+  {img:"photo16.jpg", label:"See You Again", quote:"Not goodbye."}
 ];
 
-var current = 0;
-var isPlaying = true;
-var timer = null;
-var DURATION = 5500;
+let i = 0;
+let timer;
 
-var ss = document.getElementById("slideshow");
-var dotsEl = document.getElementById("dots");
-var counterEl = document.getElementById("counter");
-var playBtn = document.getElementById("playBtn");
+const container = document.getElementById("container");
+const bars = document.getElementById("bars");
+const counter = document.getElementById("counter");
 
-function renderSlides() {
-  slides.forEach(function(s, i) {
+function build() {
+  container.innerHTML = "";
+  bars.innerHTML = "";
 
-    var slide = document.createElement("div");
-    slide.className = "slide" + (i === 0 ? " active" : "");
+  slides.forEach((s, idx) => {
 
-    slide.innerHTML =
-      '<div class="slide-bg" style="background-image:url(' + s.img + ')"></div>' +
-      '<div class="slide-content">' +
-        '<div class="slide-label">' + s.label + '</div>' +
-        '<div class="slide-quote">“' + s.quote + '”</div>' +
-        '<div class="slide-emojis">' +
-          s.emojis.map(function(e){ return '<span class="emoji-float">' + e + '</span>'; }).join('') +
-        '</div>' +
-      '</div>';
+    const story = document.createElement("div");
+    story.className = "story" + (idx === 0 ? " active" : "");
 
-    ss.appendChild(slide);
+    story.innerHTML = `
+      <div class="story-bg" style="background-image:url('${s.img}')"></div>
+      <div class="content">
+        <div class="label">${s.label}</div>
+        <div class="quote">"${s.quote}"</div>
+      </div>
+    `;
 
-    var dot = document.createElement("div");
-    dot.className = "dot" + (i === 0 ? " active" : "");
-    dot.onclick = function(){ goTo(i); };
-    dotsEl.appendChild(dot);
+    container.appendChild(story);
+
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.innerHTML = "<div></div>";
+    bars.appendChild(bar);
   });
+
+  update();
+  start();
 }
 
-function updateUI() {
-  var allSlides = document.querySelectorAll(".slide");
-  var allDots = document.querySelectorAll(".dot");
-
-  allSlides.forEach(function(el, i){
-    el.classList.toggle("active", i === current);
+function update() {
+  document.querySelectorAll(".story").forEach((el, idx) => {
+    el.classList.toggle("active", idx === i);
   });
 
-  allDots.forEach(function(el, i){
-    el.classList.toggle("active", i === current);
+  document.querySelectorAll(".bar div").forEach((b, idx) => {
+    b.style.width = idx === i ? "100%" : "0%";
   });
 
-  counterEl.textContent = (current + 1) + " / " + slides.length;
-}
-
-function goTo(n) {
-  current = (n + slides.length) % slides.length;
-  updateUI();
-  restart();
+  counter.innerText = (i + 1) + " / " + slides.length;
 }
 
 function next() {
-  goTo(current + 1);
+  i = (i + 1) % slides.length;
+  update();
+  reset();
 }
 
 function prev() {
-  goTo(current - 1);
-}
-
-function restart() {
-  stop();
-  if (isPlaying) start();
+  i = (i - 1 + slides.length) % slides.length;
+  update();
+  reset();
 }
 
 function start() {
-  timer = setInterval(next, DURATION);
-  playBtn.innerHTML = "❚❚";
+  timer = setInterval(next, 5000);
 }
 
-function stop() {
+function reset() {
   clearInterval(timer);
-  playBtn.innerHTML = "▶";
+  start();
 }
 
-playBtn.onclick = function(){
-  isPlaying = !isPlaying;
-  isPlaying ? start() : stop();
-};
+/* TAP + SWIPE */
+document.querySelector(".tap-right").onclick = next;
+document.querySelector(".tap-left").onclick = prev;
 
-document.getElementById("nextBtn").onclick = next;
-document.getElementById("prevBtn").onclick = prev;
+let startX = 0;
+document.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+document.addEventListener("touchend", e => {
+  let dx = e.changedTouches[0].clientX - startX;
+  if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
+});
 
-document.addEventListener("keydown", function(e){
+document.addEventListener("keydown", e => {
   if (e.key === "ArrowRight") next();
   if (e.key === "ArrowLeft") prev();
 });
 
-renderSlides();
-updateUI();
-start();
+build();
 </script>
+
+</body>
+</html>
