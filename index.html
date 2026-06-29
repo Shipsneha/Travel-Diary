@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Travel Stories ✈️</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
 <style>
 body {
@@ -15,28 +15,72 @@ body {
   font-family: 'Lato', sans-serif;
 }
 
-/* SAFE BACKGROUND */
-#base {
+/* ================= INTRO ================= */
+#intro {
   position: fixed;
   inset: 0;
-  background: url("photo1.jpg") center/cover no-repeat;
-  filter: brightness(0.6);
-  z-index: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  cursor: pointer;
+  text-align: center;
 }
 
-/* STORY WRAPPER */
-.story {
-  position: fixed;
+#intro::before {
+  content: "";
+  position: absolute;
   inset: 0;
-  opacity: 0;
-  transform: scale(1.05);
-  transition: opacity .6s ease, transform .6s ease;
+  background:
+    url("photo1.jpg"), url("photo2.jpg"), url("photo3.jpg"), url("photo4.jpg"),
+    url("photo5.jpg"), url("photo6.jpg"), url("photo7.jpg"), url("photo8.jpg"),
+    url("photo9.jpg"), url("photo10.jpg"), url("photo11.jpg"), url("photo12.jpg"),
+    url("photo13.jpg"), url("photo14.jpg"), url("photo15.jpg"), url("photo16.jpg");
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.45);
+  transform: scale(1.1);
+  animation: zoom 18s infinite alternate;
+}
+
+@keyframes zoom {
+  from { transform: scale(1.05); }
+  to { transform: scale(1.15); }
+}
+
+#intro h1 {
+  position: relative;
   z-index: 2;
+  font-family: 'Playfair Display', serif;
+  font-size: 56px;
+  margin: 0;
 }
 
-.story.active {
-  opacity: 1;
-  transform: scale(1);
+#intro p {
+  position: relative;
+  z-index: 2;
+  margin-top: 10px;
+  font-size: 18px;
+  letter-spacing: 0.2em;
+}
+
+/* ================= TRACK (NEW CORE CHANGE) ================= */
+#track {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* EACH STORY SLIDE */
+.story {
+  min-width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 
 .story-bg {
@@ -46,28 +90,47 @@ body {
   background-position: center;
   filter: brightness(0.55);
   transform: scale(1.1);
-  transition: transform 6s ease;
 }
 
-.story.active .story-bg {
-  transform: scale(1);
+/* TEXT */
+.content {
+  position: absolute;
+  bottom: 90px;
+  width: 100%;
+  text-align: center;
+  color: white;
+  padding: 0 20px;
 }
 
-/* TOP UI */
+.label {
+  font-size: 16px;
+  letter-spacing: 0.35em;
+  color: #f9c46b;
+  text-transform: uppercase;
+}
+
+.quote {
+  font-family: 'Playfair Display', serif;
+  font-size: 34px;
+  margin-top: 14px;
+  line-height: 1.3;
+}
+
+/* ================= TOP UI ================= */
 .topbar {
   position: fixed;
-  top: 12px;
+  top: 14px;
   left: 12px;
   right: 12px;
   display: flex;
   justify-content: space-between;
   z-index: 10;
   color: white;
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.15em;
 }
 
-/* PROGRESS BAR */
+/* PROGRESS */
 .progress-wrap {
   position: fixed;
   top: 0;
@@ -81,7 +144,7 @@ body {
 
 .bar {
   flex: 1;
-  height: 2px;
+  height: 3px;
   background: rgba(255,255,255,0.25);
   overflow: hidden;
   border-radius: 2px;
@@ -93,29 +156,6 @@ body {
   background: #fff;
 }
 
-/* TEXT */
-.content {
-  position: absolute;
-  bottom: 90px;
-  width: 100%;
-  text-align: center;
-  color: white;
-  z-index: 5;
-}
-
-.label {
-  font-size: 11px;
-  letter-spacing: 0.3em;
-  color: #f9c46b;
-}
-
-.quote {
-  font-family: 'Playfair Display', serif;
-  font-size: 22px;
-  margin-top: 10px;
-  padding: 0 20px;
-}
-
 /* TAP ZONES */
 .tap-left, .tap-right {
   position: fixed;
@@ -124,16 +164,18 @@ body {
   width: 50%;
   z-index: 30;
 }
-
 .tap-left { left: 0; }
 .tap-right { right: 0; }
-
 </style>
 </head>
 
 <body>
 
-<div id="base"></div>
+<!-- INTRO -->
+<div id="intro">
+  <h1>Our Little Adventures</h1>
+  <p>Tap anywhere to begin</p>
+</div>
 
 <div class="progress-wrap" id="bars"></div>
 
@@ -142,48 +184,57 @@ body {
   <div id="counter">1 / 16</div>
 </div>
 
-<div id="container"></div>
+<div id="track"></div>
 
 <div class="tap-left"></div>
 <div class="tap-right"></div>
 
 <script>
+
 const slides = [
-  {img:"photo1.jpg", label:"Where It All Began", quote:"We just packed and went."},
-  {img:"photo2.jpg", label:"First Morning", quote:"Sunrise was worth it."},
-  {img:"photo3.jpg", label:"Lost & Found", quote:"Best food found accidentally."},
+  {img:"photo1.jpg", label:"The Beginning", quote:"We just packed and went."},
+  {img:"photo2.jpg", label:"First Light", quote:"Sunrise was worth it."},
+  {img:"photo3.jpg", label:"Unexpected Finds", quote:"Best food found accidentally."},
   {img:"photo4.jpg", label:"By The Water", quote:"Peace felt like this."},
-  {img:"photo5.jpg", label:"Hilltop Magic", quote:"Above everything."},
+  {img:"photo5.jpg", label:"Above Everything", quote:"Hilltop magic moments."},
   {img:"photo6.jpg", label:"Golden Hour", quote:"Light turned everything gold."},
-  {img:"photo7.jpg", label:"Market Day", quote:"Chaos we loved."},
-  {img:"photo8.jpg", label:"The Long Road", quote:"Music + memories."},
-  {img:"photo9.jpg", label:"Hidden Corner", quote:"Just ours."},
-  {img:"photo10.jpg", label:"Café Stop", quote:"Coffee & calm."},
-  {img:"photo11.jpg", label:"After Rain", quote:"Everything sparkled."},
-  {img:"photo12.jpg", label:"Night Walk", quote:"City felt softer."},
-  {img:"photo13.jpg", label:"Sunday Slow", quote:"Doing nothing."},
-  {img:"photo14.jpg", label:"Local Secrets", quote:"Stories everywhere."},
-  {img:"photo15.jpg", label:"Last Sunrise", quote:"We held on."},
-  {img:"photo16.jpg", label:"See You Again", quote:"Not goodbye."}
+  {img:"photo7.jpg", label:"Street Chaos", quote:"Chaos we somehow loved."},
+  {img:"photo8.jpg", label:"Endless Roads", quote:"Music, windows down, memories."},
+  {img:"photo9.jpg", label:"Hidden Corners", quote:"Just ours."},
+  {img:"photo10.jpg", label:"Coffee Stop", quote:"Coffee and calm pauses."},
+  {img:"photo11.jpg", label:"After Rain", quote:"Everything sparkled again."},
+  {img:"photo12.jpg", label:"Night Walks", quote:"The city felt softer."},
+  {img:"photo13.jpg", label:"Slow Sundays", quote:"Doing nothing felt right."},
+  {img:"photo14.jpg", label:"Local Stories", quote:"Every corner had a story."},
+  {img:"photo15.jpg", label:"Last Sunrise", quote:"We didn’t want it to end."},
+  {img:"photo16.jpg", label:"Until Next Time", quote:"Not goodbye, just pause."}
 ];
 
 let i = 0;
 let timer;
 
-const container = document.getElementById("container");
+const track = document.getElementById("track");
 const bars = document.getElementById("bars");
 const counter = document.getElementById("counter");
+const intro = document.getElementById("intro");
+
+/* INTRO */
+intro.onclick = () => {
+  intro.style.display = "none";
+  build();
+};
 
 function build() {
-  container.innerHTML = "";
+
+  track.innerHTML = "";
   bars.innerHTML = "";
 
-  slides.forEach((s, idx) => {
+  slides.forEach((s) => {
 
-    const story = document.createElement("div");
-    story.className = "story" + (idx === 0 ? " active" : "");
+    const slide = document.createElement("div");
+    slide.className = "story";
 
-    story.innerHTML = `
+    slide.innerHTML = `
       <div class="story-bg" style="background-image:url('${s.img}')"></div>
       <div class="content">
         <div class="label">${s.label}</div>
@@ -191,7 +242,7 @@ function build() {
       </div>
     `;
 
-    container.appendChild(story);
+    track.appendChild(slide);
 
     const bar = document.createElement("div");
     bar.className = "bar";
@@ -203,10 +254,9 @@ function build() {
   start();
 }
 
+/* CORE SWIPE MOVE */
 function update() {
-  document.querySelectorAll(".story").forEach((el, idx) => {
-    el.classList.toggle("active", idx === i);
-  });
+  track.style.transform = `translateX(-${i * 100}vw)`;
 
   document.querySelectorAll(".bar div").forEach((b, idx) => {
     b.style.width = idx === i ? "100%" : "0%";
@@ -216,19 +266,21 @@ function update() {
 }
 
 function next() {
-  i = (i + 1) % slides.length;
+  i = Math.min(i + 1, slides.length - 1);
   update();
   reset();
 }
 
 function prev() {
-  i = (i - 1 + slides.length) % slides.length;
+  i = Math.max(i - 1, 0);
   update();
   reset();
 }
 
 function start() {
-  timer = setInterval(next, 5000);
+  timer = setInterval(() => {
+    if (i < slides.length - 1) next();
+  }, 5000);
 }
 
 function reset() {
@@ -236,15 +288,23 @@ function reset() {
   start();
 }
 
-/* TAP + SWIPE */
+/* TAP */
 document.querySelector(".tap-right").onclick = next;
 document.querySelector(".tap-left").onclick = prev;
 
+/* SWIPE */
 let startX = 0;
-document.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+
+document.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+});
+
 document.addEventListener("touchend", e => {
   let dx = e.changedTouches[0].clientX - startX;
-  if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
+
+  if (Math.abs(dx) > 40) {
+    dx < 0 ? next() : prev();
+  }
 });
 
 document.addEventListener("keydown", e => {
@@ -252,7 +312,6 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft") prev();
 });
 
-build();
 </script>
 
 </body>
