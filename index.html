@@ -303,19 +303,13 @@ function build() {
   track.innerHTML = "";
   bars.innerHTML = "";
 
-slides.forEach((s, idx) => {
-
-    const slide = document.createElement("div");
-    slide.className = "story";
-
-    slide.innerHTML = `
-      slide.innerHTML = `
+slide.innerHTML = `
   <div class="story-bg" style="background-image:url('${s.img}')"></div>
   <div class="content ${idx === slides.length - 1 ? 'last-slide' : ''}">
-        <div class="label">${s.label}</div>
-        <div class="quote">${s.quote}</div>
-      </div>
-    `;
+    <div class="label">${s.label}</div>
+    <div class="quote">${s.quote}</div>
+  </div>
+`;
 
     track.appendChild(slide);
 
