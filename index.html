@@ -89,12 +89,15 @@ body {
 .content {
   position: absolute;
   left: 50%;
-  bottom: 8vh;
-  transform: translateX(-50%);
-  width: min(90%, 700px);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(88%, 700px);
+  max-height: 80vh;
+  overflow-y: auto;
   text-align: center;
   color: white;
   box-sizing: border-box;
+  padding: 20px;
 }
 .label {
   font-size: clamp(11px, 2vw, 16px);
@@ -105,10 +108,10 @@ body {
 
 .quote {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(22px, 5vw, 36px);
-  margin-top: 14px;
-  line-height: 1.45;
+  font-size: clamp(18px, 4vw, 34px);
+  line-height: 1.6;
   text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+  white-space: normal;
   word-break: break-word;
 }
 
@@ -199,6 +202,22 @@ body {
 }
 
 }
+  .last-slide .quote{
+    font-size:18px;
+    line-height:1.7;
+}
+
+.last-slide .label{
+    font-size:14px;
+}
+
+@media(max-width:768px){
+
+.last-slide .quote{
+    font-size:16px;
+}
+
+}
 
 </style>
 </head>
@@ -284,14 +303,15 @@ function build() {
   track.innerHTML = "";
   bars.innerHTML = "";
 
-  slides.forEach((s) => {
+slides.forEach((s, idx) => {
 
     const slide = document.createElement("div");
     slide.className = "story";
 
     slide.innerHTML = `
-      <div class="story-bg" style="background-image:url('${s.img}')"></div>
-      <div class="content">
+      slide.innerHTML = `
+  <div class="story-bg" style="background-image:url('${s.img}')"></div>
+  <div class="content ${idx === slides.length - 1 ? 'last-slide' : ''}">
         <div class="label">${s.label}</div>
         <div class="quote">${s.quote}</div>
       </div>
